@@ -1,0 +1,207 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Unit {
+  name        String  @id
+  type        String
+  base_unit   String
+  multiplier  Float
+
+  Ingredient  Ingredient[]
+  Ingredient_item Ingredient_item[]
+  Drink_recipe Drink_recipe[]
+}
+
+model Transaction {
+  id        Int   @id
+  item      String
+  brand     String
+  category  String
+  date      DateTime
+  price     Float
+
+  Liquor_bottle     Liquor_bottle[]
+  Base_bottle       Base_bottle[]
+  Ingredient_item   Ingredient_item[]
+  Tool              Tool[]
+}
+
+model Liquor_type {
+  name   String  @id
+  Liquor Liquor[]
+}
+
+model Liquor {
+  liquor_id Int    @id @default(autoincrement())
+  brand     String
+  name      String
+  mL        Int
+  ABV       Int
+  img_path  String
+  type      String
+  present   Boolean
+
+  Liquor_type Liquor_type @relation(fields: [type], references: [name])
+  Liquor_bottle Liquor_bottle[]
+
+  @@unique([brand, name, mL])
+}
+
+model Liquor_bottle {
+  id             Int       @id @default(autoincrement())
+  liquor_id      Int
+  transaction_id Int
+  date_opened    DateTime?
+  date_finished  DateTime?
+  quantity       Int       @default(100)
+
+  Liquor      Liquor      @relation(fields: [liquor_id], references: [liquor_id])
+  Transaction Transaction @relation(fields: [transaction_id], references: [id])
+}
+
+model Base_type {
+  name String @id
+  Base Base[]
+}
+
+model Base {
+  base_id  Int     @id @default(autoincrement())
+  brand    String
+  name     String
+  mL       Int
+  img_path String
+  type     String
+  present  Boolean
+
+  Base_type Base_type @relation(fields: [type], references: [name])
+  Base_bottle Base_bottle[]
+
+  @@unique([brand, name, mL])
+}
+
+model Base_bottle {
+  id             Int       @id @default(autoincrement())
+  base_id        Int
+  transaction_id Int
+  date_opened    DateTime?
+  date_finished  DateTime?
+  quantity       Int       @default(100)
+
+  Base        Base        @relation(fields: [base_id], references: [base_id])
+  Transaction Transaction @relation(fields: [transaction_id], references: [id])
+}
+
+model Ingredient_type {
+  name        String       @id
+  Ingredient  Ingredient[]
+}
+
+model Ingredient {
+  id        Int     @id @default(autoincrement())
+  name      String             
+  quantity  Float               
+  unit      String                        
+  brand     String?
+  type      String   
+  img_path  String
+  present   Boolean
+
+  Ingredient_type Ingredient_type @relation(fields: [type], references: [name])
+  Unit            Unit            @relation(fields: [unit], references: [name])
+  Ingredient_item Ingredient_item[]
+
+  @@unique([name, quantity, unit])
+}
+
+model Ingredient_item {
+  id             Int       @id @default(autoincrement())
+  brand          String
+  name           String
+  quantity       Float
+  unit           String
+  transaction_id Int
+  date_opened    DateTime?
+  date_finished  DateTime?
+
+  Ingredient  Ingredient  @relation(fields: [name, quantity, unit], references: [name, quantity, unit])
+  Unit        Unit        @relation(fields: [unit], references: [name])
+  Transaction Transaction @relation(fields: [transaction_id], references: [id])
+}
+
+model Tool_type {
+  name String @id
+  Tool Tool[]
+}
+
+model Tool { 
+  name     String @id
+  transaction_id Int
+  quantity Int
+  unit     String
+  type     String
+
+  Tool_type Tool_type @relation(fields: [type], references: [name])
+  Transaction Transaction @relation(fields: [transaction_id], references: [id])
+}
+
+model Drink {
+  name     String         @id
+  img_path String
+
+  Drink_recipe  Drink_recipe[]
+  Drink_variant Drink_variant[]
+}
+
+model Drink_recipe {
+  drink_id   Int    @id @default(autoincrement())
+  name       String
+  ingredient String
+  quantity   Int
+  unit       String
+
+  Drink Drink @relation(fields: [name], references: [name])
+  Unit  Unit  @relation(fields: [unit], references: [name])
+
+  Drink_variant Drink_variant[]
+
+  @@unique([name, ingredient])
+}
+
+model Drink_variant {
+  variant_id        Int   @id @default(autoincrement())
+  drink_id          Int
+  base_drink        String
+  variant_name      String
+  img_overlay_path  String?
+  notes             String?
+
+  Drink    Drink    @relation(fields: [base_drink], references: [name])
+  Drink_recipe  Drink_recipe  @relation(fields: [drink_id], references: [drink_id])
+  Variant_ingredients Drink_variant_ingredient[]
+
+  @@unique([base_drink, variant_name])
+}
+
+model Drink_variant_ingredient {
+  variant_id             Int
+  original_ingredient    String
+  replacement_ingredient String
+
+  Drink_variant Drink_variant @relation(fields: [variant_id], references: [variant_id])
+  // UI needs to enforce that original_ingredient is present, maybe a button interface for ingredients?
+
+  @@id([variant_id, original_ingredient])
+}
