@@ -1,0 +1,10 @@
+import { defineConfig } from "prisma/config";
+
+export default defineConfig({
+    schema: "prisma/schema.prisma",
+    migrations: {
+        // Use tsx (simplest) or ts-node — pick ONE and make sure it's installed
+        seed: "tsx prisma/seed.ts",   // <-- recommended
+        // seed: "ts-node prisma/seed.ts",
+    },
+});
