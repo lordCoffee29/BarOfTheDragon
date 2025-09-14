@@ -14,6 +14,7 @@ export const TransactionController = {
     async getTransactionById(req, res) {
         try {
             const transactionID = parseInt(req.params.id);
+            // console.log(transactionID);
             if (isNaN(transactionID)) {
                 return res.status(400).send({ message: 'Invalid transaction ID' });
             }
@@ -23,7 +24,7 @@ export const TransactionController = {
             res.status(500).send({ message: 'Failed to fetch transactions by ID' });
         }
         // const transactionID = parseInt(req.params.id);
-        res.send(`Get transaction by ID: ${transactionID}`);
+        // res.send(`Get transaction by ID: ${transactionID}`);
     },
 
     async createTransaction(req, res) {
@@ -40,11 +41,13 @@ export const TransactionController = {
 
     async updateTransaction(req, res) {
         try {
-            const transactionID = parseInt(req.body);
+            const transactionID = parseInt(req.params.id);
+            // console.log(transactionID);
+            // console.log(req.body);
             const transaction = await TransactionService.updateTransaction(transactionID, req.body);
             res.status(200).json(transaction);
         } catch (error) {
-            res.status(500).send({ message: 'Failed to update transactions' });
+            res.status(500).send({ message: `Failed to update transactionsn ${error}` });
         }
         // const transactionID = parseInt(req.params.id);
         // res.send(`Update existing transaction: ${transactionID}`);

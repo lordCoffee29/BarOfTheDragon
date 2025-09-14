@@ -21,16 +21,12 @@ export const TransactionModel = {
         return result.rows[0];
     },
 
-    async update(transactionID, { item, brand, category, date, price }) {
-        // const result = await db.query(`
-        //     UPDATE Transactions 
-        //     SET item = $1, brand = $2, category = $3, date = $4, price = $5 
-        //     WHERE id = $6 RETURNING *
-        // `, [item, brand, category, date, price, transactionID]
-        // );
-        // return result.rows[0];
-
-        // Placeholder code, fix later
+    async update(query, values) {
+        const result = await db.query(query, values);
+        if(!result) {
+            throw new Error('Failed to update transaction in the model');
+        }
+        return result.rows[0];
     },
 
     async delete(transactionID) {
