@@ -14,37 +14,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Unit {
+model units {
   name        String  @id
   type        String
   base_unit   String
   multiplier  Float
 
-  Ingredient  Ingredient[]
-  Ingredient_item Ingredient_item[]
-  Drink_recipe Drink_recipe[]
+  ingredient  ingredient[]
+  ingredient_item ingredient_item[]
+  drink_recipe drink_recipe[]
 }
 
-model Transaction {
-  id        Int   @id
+model transactions {
+  id        Int   @id @default(autoincrement())
   item      String
   brand     String
   category  String
   date      DateTime
   price     Float
 
-  Liquor_bottle     Liquor_bottle[]
-  Base_bottle       Base_bottle[]
-  Ingredient_item   Ingredient_item[]
-  Tool              Tool[]
+  liquor_bottle     liquor_bottle[]
+  base_bottle       base_bottle[]
+  ingredient_item   ingredient_item[]
+  tool              tool[]
 }
 
-model Liquor_type {
+model liquor_type {
   name   String  @id
-  Liquor Liquor[]
+  liquor liquor[]
 }
 
-model Liquor {
+model liquor {
   liquor_id Int    @id @default(autoincrement())
   brand     String
   name      String
@@ -54,13 +54,13 @@ model Liquor {
   type      String
   present   Boolean
 
-  Liquor_type Liquor_type @relation(fields: [type], references: [name])
-  Liquor_bottle Liquor_bottle[]
+  liquor_type liquor_type @relation(fields: [type], references: [name])
+  liquor_bottle liquor_bottle[]
 
   @@unique([brand, name, mL])
 }
 
-model Liquor_bottle {
+model liquor_bottle {
   id             Int       @id @default(autoincrement())
   liquor_id      Int
   transaction_id Int
@@ -68,16 +68,16 @@ model Liquor_bottle {
   date_finished  DateTime?
   quantity       Int       @default(100)
 
-  Liquor      Liquor      @relation(fields: [liquor_id], references: [liquor_id])
-  Transaction Transaction @relation(fields: [transaction_id], references: [id])
+  liquor      liquor      @relation(fields: [liquor_id], references: [liquor_id])
+  transactions transactions @relation(fields: [transaction_id], references: [id])
 }
 
-model Base_type {
+model base_type {
   name String @id
-  Base Base[]
+  base base[]
 }
 
-model Base {
+model base {
   base_id  Int     @id @default(autoincrement())
   brand    String
   name     String
@@ -86,13 +86,13 @@ model Base {
   type     String
   present  Boolean
 
-  Base_type Base_type @relation(fields: [type], references: [name])
-  Base_bottle Base_bottle[]
+  base_type base_type @relation(fields: [type], references: [name])
+  base_bottle base_bottle[]
 
   @@unique([brand, name, mL])
 }
 
-model Base_bottle {
+model base_bottle {
   id             Int       @id @default(autoincrement())
   base_id        Int
   transaction_id Int
@@ -100,16 +100,16 @@ model Base_bottle {
   date_finished  DateTime?
   quantity       Int       @default(100)
 
-  Base        Base        @relation(fields: [base_id], references: [base_id])
-  Transaction Transaction @relation(fields: [transaction_id], references: [id])
+  base        base        @relation(fields: [base_id], references: [base_id])
+  transactions transactions @relation(fields: [transaction_id], references: [id])
 }
 
-model Ingredient_type {
+model ingredient_type {
   name        String       @id
-  Ingredient  Ingredient[]
+  ingredient  ingredient[]
 }
 
-model Ingredient {
+model ingredient {
   id        Int     @id @default(autoincrement())
   name      String             
   quantity  Float               
@@ -119,14 +119,14 @@ model Ingredient {
   img_path  String
   present   Boolean
 
-  Ingredient_type Ingredient_type @relation(fields: [type], references: [name])
-  Unit            Unit            @relation(fields: [unit], references: [name])
-  Ingredient_item Ingredient_item[]
+  ingredient_type ingredient_type @relation(fields: [type], references: [name])
+  units            units            @relation(fields: [unit], references: [name])
+  ingredient_item ingredient_item[]
 
   @@unique([name, quantity, unit])
 }
 
-model Ingredient_item {
+model ingredient_item {
   id             Int       @id @default(autoincrement())
   brand          String
   name           String
@@ -136,51 +136,51 @@ model Ingredient_item {
   date_opened    DateTime?
   date_finished  DateTime?
 
-  Ingredient  Ingredient  @relation(fields: [name, quantity, unit], references: [name, quantity, unit])
-  Unit        Unit        @relation(fields: [unit], references: [name])
-  Transaction Transaction @relation(fields: [transaction_id], references: [id])
+  ingredient  ingredient  @relation(fields: [name, quantity, unit], references: [name, quantity, unit])
+  units        units        @relation(fields: [unit], references: [name])
+  transactions transactions @relation(fields: [transaction_id], references: [id])
 }
 
-model Tool_type {
+model tool_type {
   name String @id
-  Tool Tool[]
+  tool tool[]
 }
 
-model Tool { 
+model tool { 
   name     String @id
   transaction_id Int
   quantity Int
   unit     String
   type     String
 
-  Tool_type Tool_type @relation(fields: [type], references: [name])
-  Transaction Transaction @relation(fields: [transaction_id], references: [id])
+  tool_type tool_type @relation(fields: [type], references: [name])
+  transactions transactions @relation(fields: [transaction_id], references: [id])
 }
 
-model Drink {
+model drink {
   name     String         @id
   img_path String
 
-  Drink_recipe  Drink_recipe[]
-  Drink_variant Drink_variant[]
+  drink_recipe  drink_recipe[]
+  drink_variant drink_variant[]
 }
 
-model Drink_recipe {
+model drink_recipe {
   drink_id   Int    @id @default(autoincrement())
   name       String
   ingredient String
   quantity   Int
   unit       String
 
-  Drink Drink @relation(fields: [name], references: [name])
-  Unit  Unit  @relation(fields: [unit], references: [name])
+  drink drink @relation(fields: [name], references: [name])
+  units  units  @relation(fields: [unit], references: [name])
 
-  Drink_variant Drink_variant[]
+  drink_variant drink_variant[]
 
   @@unique([name, ingredient])
 }
 
-model Drink_variant {
+model drink_variant {
   variant_id        Int   @id @default(autoincrement())
   drink_id          Int
   base_drink        String
@@ -188,19 +188,19 @@ model Drink_variant {
   img_overlay_path  String?
   notes             String?
 
-  Drink    Drink    @relation(fields: [base_drink], references: [name])
-  Drink_recipe  Drink_recipe  @relation(fields: [drink_id], references: [drink_id])
-  Variant_ingredients Drink_variant_ingredient[]
+  drink    drink    @relation(fields: [base_drink], references: [name])
+  drink_recipe  drink_recipe  @relation(fields: [drink_id], references: [drink_id])
+  drink_variant_ingredients drink_variant_ingredient[]
 
   @@unique([base_drink, variant_name])
 }
 
-model Drink_variant_ingredient {
+model drink_variant_ingredient {
   variant_id             Int
   original_ingredient    String
   replacement_ingredient String
 
-  Drink_variant Drink_variant @relation(fields: [variant_id], references: [variant_id])
+  drink_variant drink_variant @relation(fields: [variant_id], references: [variant_id])
   // UI needs to enforce that original_ingredient is present, maybe a button interface for ingredients?
 
   @@id([variant_id, original_ingredient])

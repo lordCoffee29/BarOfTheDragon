@@ -11,7 +11,7 @@ const REQUIRED = {
 };
 
 async function seedDefault() {
-    await prisma.unit.createMany({
+    await prisma.units.createMany({
         data: [
             { name: 'ml', type: 'volume', base_unit: 'ml', multiplier: 1 },
             { name: 'oz', type: 'volume', base_unit: 'ml', multiplier: 29.5735 },
@@ -150,7 +150,7 @@ async function seedDemo() {
     await ensureDefaults();
 
     // ---------- Transactions (ids are explicit because your schema has no autoincrement on Transaction.id)
-    const t1 = await prisma.transaction.upsert({
+    const t1 = await prisma.transactions.upsert({
         where: { id: 1001 },
         update: {},
         create: {
@@ -159,7 +159,7 @@ async function seedDemo() {
         }
     });
 
-    const t2 = await prisma.transaction.upsert({
+    const t2 = await prisma.transactions.upsert({
         where: { id: 1002 },
         update: {},
         create: {

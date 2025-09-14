@@ -1,7 +1,7 @@
-import { Router } from "express";
-import { TransactionController } from "../../controllers/core/transactionController.js";
+import { Router } from 'express';
+import { TransactionController } from "../../controllers/core/transactionsController.js";
 
-const router = Router ();
+const router = Router();
 
 router.get('/', TransactionController.getAllTransactions);
 
