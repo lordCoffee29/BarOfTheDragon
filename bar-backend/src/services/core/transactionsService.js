@@ -50,13 +50,12 @@ export const TransactionService = {
             RETURNING *
         `
 
-        console.log(query.trim());
 
-        if(!item || !brand || !category || !date || !price) {
+        if(!item && !brand && !category && !date && !price) {
             throw new Error('Missing required fields');
         }
 
-        const updatedTransaction = await TransactionModel.update(query.trim(), values);
+        const updatedTransaction = await TransactionModel.update(query, values);
         
 
         if(!updatedTransaction) {
@@ -68,8 +67,28 @@ export const TransactionService = {
         // const transactionID = parseInt(req.params.id);
         // res.send(`Update existing transaction: ${transactionID}`);
 
-    async deleteTransaction(req, res) {
-        const transactionID = parseInt(req.params.id);
-        res.send(`Delete old transaction: ${transactionID}`);
+    async deleteTransaction(transactionID) {
+        const authenticatedUserID = 1;
+
+        const transaction = await TransactionModel.getByID(transactionID);
+
+        if (!transaction) {
+            throw new Error('Transaction not found');
+        };
+
+        if (transaction.user_id !== autenticatedUserId) {
+            throw new Error('Unauthorized to delete this transaction');
+        };
+
+        const rowCount = await TransactionModel.delete(transactionID);
+
+        if(rowCount === 0) {
+            throw new Error('Transaction not found or already deleted');
+        }
+
+        return { message: 'Transaction deleted successfully' };
+
+        // const transactionID = parseInt(req.params.id);
+        // res.send(`Delete old transaction: ${transactionID}`);
     }
 };

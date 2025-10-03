@@ -31,6 +31,6 @@ export const TransactionModel = {
 
     async delete(transactionID) {
         const result = await db.query('DELETE FROM Transactions WHERE id = $1 RETURNING *', [transactionID]);
-        return result.rowsCount;
+        return result.rowCount;
     }
 };

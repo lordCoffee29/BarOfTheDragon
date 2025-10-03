@@ -78,7 +78,7 @@ model base_type {
 }
 
 model base {
-  base_id  Int     @id @default(autoincrement())
+  id       Int     @id @default(autoincrement())
   brand    String
   name     String
   mL       Int
@@ -100,7 +100,7 @@ model base_bottle {
   date_finished  DateTime?
   quantity       Int       @default(100)
 
-  base        base        @relation(fields: [base_id], references: [base_id])
+  base        base        @relation(fields: [base_id], references: [id])
   transactions transactions @relation(fields: [transaction_id], references: [id])
 }
 
@@ -166,7 +166,7 @@ model drink {
 }
 
 model drink_recipe {
-  drink_id   Int    @id @default(autoincrement())
+  id         Int    @id @default(autoincrement())
   name       String
   ingredient String
   quantity   Int
@@ -181,7 +181,7 @@ model drink_recipe {
 }
 
 model drink_variant {
-  variant_id        Int   @id @default(autoincrement())
+  id                Int   @id @default(autoincrement())
   drink_id          Int
   base_drink        String
   variant_name      String

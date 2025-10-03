@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { TransactionController } from "../../controllers/core/transactionsController.js";
+import { validateData } from '../../middlewares/validationMiddleware.js';
+import { createTransactionSchema, updateTransactionSchema } from '../../schemas/core/transactionsSchema.js';
 
 const router = Router();
 
@@ -7,9 +9,9 @@ router.get('/', TransactionController.getAllTransactions);
 
 router.get('/:id', TransactionController.getTransactionById);
 
-router.post('/', TransactionController.createTransaction);
+router.post('/', validateData(createTransactionSchema), TransactionController.createTransaction);
 
-router.patch('/:id', TransactionController.updateTransaction);
+router.patch('/:id', validateData(updateTransactionSchema), TransactionController.updateTransaction);
 
 router.delete('/:id', TransactionController.deleteTransaction);
 

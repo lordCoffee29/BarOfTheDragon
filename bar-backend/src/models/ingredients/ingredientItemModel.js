@@ -1,0 +1,36 @@
+import db from '../../config/db.js';
+
+export const IngredientItemModel = {
+    async getAll() {
+        const result = await db.query('SELECT * FROM ingredient_item');
+        return result.rows;
+    },
+    
+    async getByID(ingredientID) {
+        const result = await db.query('SELECT * FROM ingredient_item WHERE id = $1', [ingredientID]);
+        return result.rows[0];
+    },
+
+    async create({ brand, name, quantity, unit, transactionID, dateOpened, dateFinished }) {
+        const result = await db.query(`
+            INSERT INTO drink_recipe 
+            (brand, name, quantity, unit, transaction_id, date_opened, date_finished) 
+            VALUES ($1, $2, $3, $4) RETURNING *
+        `, [brand, name, quantity, unit, transactionID, dateOpened, dateFinished]
+        );
+        return result.rows[0];
+    },
+
+    async update(query, values) {
+        const result = await db.query(query, values);
+        if(!result) {
+            throw new Error('Failed to update ingredient item in the model');
+        }
+        return result.rows[0];
+    },
+
+    async delete(ingredientID) {
+        const result = await db.query('DELETE FROM ingredient_item WHERE id = $1 RETURNING *', [ingredientID]);
+        return result.rowCount;
+    }
+};
