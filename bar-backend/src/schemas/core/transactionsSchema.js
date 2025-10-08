@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+// TO-DO: more detailed error handling, can cross-check tables???
 export const transactionSchema = z.object({
   id: z.number(),
   item: z.string().min(1, 'Item should be longer').max(255),

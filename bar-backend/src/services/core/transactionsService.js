@@ -1,6 +1,9 @@
+import ERROR_MESSAGES from "../../constants/errorMessages.js";
 import { TransactionModel } from '../../models/core/transactionsModel.js';
+// import CustomError from "../../utils/CustomError.js";
 
 // Clean up + do operations here, basically backend logic to format for database
+// TO-DO: replace error handling
 
 export const TransactionService = {
     async getAllTransactions() {
@@ -10,7 +13,7 @@ export const TransactionService = {
     async getTransactionByID(transactionID) {
         const transaction = await TransactionModel.getByID(transactionID);
         if(!transaction) {
-            throw new Error('Transaction not found');
+            throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }
         return transaction;
     },
@@ -19,7 +22,7 @@ export const TransactionService = {
         const { item, brand, category, date, price } = newTransaction;
 
         if(!item || !brand || !category || !date || !price) {
-            throw new Error('Missing required fields');
+            throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }
 
         const createdTransaction = await TransactionModel.create(newTransaction);
@@ -33,7 +36,7 @@ export const TransactionService = {
 
         const fields = Object.keys(newValues);
         const values = Object.values(newValues);
-        // values.push(transactionID); // For the WHERE clause
+        values.push(transactionID); // For the WHERE clause
 
         console.log(fields);
         console.log(values);
@@ -46,7 +49,7 @@ export const TransactionService = {
         const query = `
             UPDATE Transactions 
             SET ${setClause} 
-            WHERE id = ${transactionID}
+            WHERE id = $${values.length}
             RETURNING *
         `
 
@@ -59,7 +62,7 @@ export const TransactionService = {
         
 
         if(!updatedTransaction) {
-            throw new Error('Transaction not found');
+            throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }
 
         return updatedTransaction;
@@ -73,17 +76,17 @@ export const TransactionService = {
         const transaction = await TransactionModel.getByID(transactionID);
 
         if (!transaction) {
-            throw new Error('Transaction not found');
+            throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         };
 
         if (transaction.user_id !== autenticatedUserId) {
-            throw new Error('Unauthorized to delete this transaction');
+            throw new Error(ERROR_MESSAGES.FORBIDDEN, 403);
         };
 
         const rowCount = await TransactionModel.delete(transactionID);
 
         if(rowCount === 0) {
-            throw new Error('Transaction not found or already deleted');
+            throw new Error(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, 500);
         }
 
         return { message: 'Transaction deleted successfully' };
