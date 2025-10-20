@@ -1,6 +1,6 @@
 import db from '../../config/db.js';
 
-export const ToolType = {
+export const ToolTypeModel = {
     async getAll() {
         const result = await db.query('SELECT * FROM tool_type');
         return result.rows;
@@ -30,7 +30,7 @@ export const ToolType = {
     },
 
     async delete(name) {
-        const result = await db.query('DELETE FROM tool_type WHERE id = $1 RETURNING *', [name]);
+        const result = await db.query('DELETE FROM tool_type WHERE name = $1 RETURNING *', [name]);
         return result.rowCount;
     }
 };

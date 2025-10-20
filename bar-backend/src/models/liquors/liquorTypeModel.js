@@ -30,7 +30,7 @@ export const LiquorType = {
     },
 
     async delete(name) {
-        const result = await db.query('DELETE FROM liquor_type WHERE id = $1 RETURNING *', [name]);
+        const result = await db.query('DELETE FROM liquor_type WHERE name = $1 RETURNING *', [name]);
         return result.rowCount;
     }
 };

@@ -11,12 +11,12 @@ export const UnitModel = {
         return result.rows[0];
     },
 
-    async create({ name, type, base_unit, multiplier }) {
+    async create({ name, type, baseUnit, multiplier }) {
         const result = await db.query(`
             INSERT INTO units 
             (name, type, base_unit, multiplier) 
             VALUES ($1, $2, $3, $4) RETURNING *
-        `, [name, type, base_unit, multiplier]
+        `, [name, type, baseUnit, multiplier]
         );
         return result.rows[0];
     },

@@ -6,14 +6,14 @@ export const IngredientItemModel = {
         return result.rows;
     },
     
-    async getByID(ingredientID) {
-        const result = await db.query('SELECT * FROM ingredient_item WHERE id = $1', [ingredientID]);
+    async getByID(ingredientItemID) {
+        const result = await db.query('SELECT * FROM ingredient_item WHERE id = $1', [ingredientItemID]);
         return result.rows[0];
     },
 
     async create({ brand, name, quantity, unit, transactionID, dateOpened, dateFinished }) {
         const result = await db.query(`
-            INSERT INTO drink_recipe 
+            INSERT INTO ingredient_item 
             (brand, name, quantity, unit, transaction_id, date_opened, date_finished) 
             VALUES ($1, $2, $3, $4) RETURNING *
         `, [brand, name, quantity, unit, transactionID, dateOpened, dateFinished]

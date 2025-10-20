@@ -30,7 +30,7 @@ export const DrinkRecipeModel = {
     },
 
     async delete(drinkID) {
-        const result = await db.query('DELETE FROM drink WHERE id = $1 RETURNING *', [drinkID]);
+        const result = await db.query('DELETE FROM drink_recipe WHERE id = $1 RETURNING *', [drinkID]);
         return result.rowCount;
     }
 };

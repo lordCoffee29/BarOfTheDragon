@@ -11,12 +11,12 @@ export const BaseModel = {
         return result.rows[0];
     },
 
-    async create({ baseID, brand, name, ml, imgPath, type, present }) {
+    async create({ brand, name, mL, imgPath, type, present }) {
         const result = await db.query(`
             INSERT INTO base_bottle 
-            (baseID, brand, name, ml, imgPath, type, present) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
-        `, [baseID, brand, name, ml, imgPath, type, present]
+            (brand, name, ml, img_path, type, present) 
+            VALUES ($1, $2, $3, $4, $5, $6) RETURNING *
+        `, [brand, name, ml, imgPath, type, present]
         );
         return result.rows[0];
     },
