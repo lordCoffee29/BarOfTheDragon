@@ -1,38 +1,38 @@
 import ERROR_MESSAGES from "../../constants/errorMessages.js";
-import { BaseBottleModel } from '../../models/bases/baseBottleModel.js';
+import { DrinkVariantModel } from '../../models/drinks/variants/drinkVariantModel.js';
 // import CustomError from "../../utils/CustomError.js";
 
 // Clean up + do operations here, basically backend logic to format for database
 // TO-DO: replace error handling
 
-export const BaseBottleService = {
-    async getAllBaseBottles() {
-        return BaseBottleModel.getAll();
+export const DrinkVariantService = {
+    async getAllDrinkVariants() {
+        return DrinkVariantModel.getAll();
     },
 
-    async getBaseBottleByID(baseBottleID) {
-        const baseBottle = await BaseBottleModel.getByID(baseBottleID);
-        if(!baseBottle) {
+    async getDrinkVariantByID(drinkVariantID) {
+        const drinkVariant = await DrinkVariantModel.getByID(drinkVariantID);
+        if(!drinkVarient) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }
-        return baseBottle;
+        return drinkVariant;
     },
 
-    async createBaseBottle(newBaseBottle) {
-        const { id, baseID, transactionID, dateOpened, dateFinished, quantity } = newBaseBottle;
+    async createDrinkVariant(newDrinkVariant) {
+        const { id, drinkID, baseDrink, variantName, imgOverlayPath, notes } = newDrinkVariant;
 
-        if( !id || !baseID || !transactionID || !dateOpened || dateFinished || quantity) {
+        if( !id || !drinkID || !baseDrink || !variantName || !imgOverlayPath || !notes ) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }
 
-        const createdBaseBottle = await BaseBottleModel.create(newBaseBottle);
+        const createdDrinkVariant = await DrinkVariantModel.create(newDrinkVariant);
 
-        return createdBaseBottle;
+        return createdDrinkVariant;
     },
 
     // Customize this logic
-    async updateBaseBottle(name, newValues) {
-        const { baseID, transactionID, dateOpened, dateFinished, quantity } = newValues;
+    async updateDrinkVariant(name, newValues) {
+        const { drinkID, baseDrink, variantName, imgOverlayPath, notes } = newValues;
 
         const fields = Object.keys(newValues);
         const values = Object.values(newValues);
@@ -47,47 +47,47 @@ export const BaseBottleService = {
 
         // This ID mechanism is more secure against SQL injection
         const query = `
-            UPDATE base_bottle 
+            UPDATE drink_variant
             SET ${setClause} 
             WHERE name = $${values.length}
             RETURNING *
         `
 
 
-        if(!baseID && !transactionID && !dateOpened && !dateFinished && !quantity) {
+        if(!variantID && !originalIngredient && !replacementIngredient) {
             throw new Error('Missing required fields');
         }
 
-        const updatedBaseBottle = await BaseBottleModel.update(query, values);
+        const updatedDrinkVariant = await DrinkVariantModel.update(query, values);
         
 
-        if(!updatedBaseBottle) {
+        if(!updatedDrinkVariant) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }
 
-        return updatedBaseBottle;
+        return updatedDrinkVariant;
     },
 
-    async deleteBaseBottle(baseBottleID) {
+    async deleteDrinkVariant(id) {
         const authenticatedUserID = 1;
 
-        const baseBottle = await BaseBottleModel.getByID(baseBottleID);
+        const drinkVariant = await DrinkVariantModel.getByID(id);
 
-        if (!baseBottle) {
+        if (!drinkVariant) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         };
 
-        if (baseBottle.user_id !== autenticatedUserId) {
+        if (drinkVariant.user_id !== autenticatedUserId) {
             throw new Error(ERROR_MESSAGES.FORBIDDEN, 403);
         };
 
-        const rowCount = await BaseBottleModel.delete(baseBottleID);
+        const rowCount = await DrinkVariantModel.delete(id);
 
         if(rowCount === 0) {
             throw new Error(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, 500);
         }
 
-        return { message: 'Base bottle deleted successfully' };
+        return { message: 'Drink variant deleted successfully' };
 
     }
 };
