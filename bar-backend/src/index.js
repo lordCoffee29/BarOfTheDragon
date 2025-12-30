@@ -1,6 +1,6 @@
 import express from 'express';
 import transactionRoute from './routes/core/transactions.js';
-
+import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware.js';
 
 const app = express()
 const port = process.env.PORT || 3000

@@ -29,6 +29,23 @@ export const TransactionController = {
         // res.send(`Get transaction by ID: ${transactionID}`);
     },
 
+    async getTransactionsByFilter(req, res, next) {
+        try {
+            const filters = {
+                item: req.query.item || null,
+                brand: req.query.brand || null,
+                category: req.query.category || null,
+                date: req.query.date || null,
+                price: req.query.price || null,
+            };
+            
+            const transactions = await TransactionService.getTransactionsByFilter(filters);
+            res.status(200).json(transactions);
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async createTransaction(req, res, next) {
         try {
             const transaction = await TransactionService.createTransaction(req.body);

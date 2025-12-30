@@ -18,6 +18,14 @@ export const TransactionService = {
         return transaction;
     },
 
+    async getTransactionsByFilter(filters) {
+        const transaction = await TransactionModel.getByFilter(filters);
+        if(!transaction) {
+            throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
+        }
+        return transaction;
+    },
+
     async createTransaction(newTransaction) {
         const { item, brand, category, date, price } = newTransaction;
 
