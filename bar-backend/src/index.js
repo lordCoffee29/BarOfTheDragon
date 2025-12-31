@@ -1,6 +1,6 @@
 import express from 'express';
+import receiptRoute from './routes/core/receipt.js';
 import transactionRoute from './routes/core/transactions.js';
-import errorHandlerMiddleware from './middlewares/errorHandlerMiddleware.js';
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -9,6 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/core/transactions', transactionRoute);
+app.use('/core/receipt', receiptRoute);
 
 // app.get('/', (req, res) => {
 //     res.send('Hello World!')

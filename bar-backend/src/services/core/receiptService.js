@@ -10,33 +10,31 @@ export const ReceiptService = {
     async getReceiptByID(receiptID) {
         const receipt = await ReceiptModel.getByID(receiptID);
         if(!receipt) {
-            throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
+            const error = new Error(ERROR_MESSAGES.ITEM_NOT_FOUND);
+            error.statusCode = 404;
+            throw error;
         }
         return receipt;
     },
 
     async createReceipt(newReceipt) {
-        const { date, createdAt } = newReceipt;
-        if( !date || !createdAt ) {
-            throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
+        const { date } = newReceipt;
+        if (!date) {
+            const error = new Error('Date is required');
+            error.statusCode = 400;
+            throw error;
         }
 
-        const createdReceipt = await ReceiptModel.create(newReceipt);
+        const createdReceipt = await ReceiptModel.create({ date });
 
         return createdReceipt;
     },
 
     async deleteReceipt(id) {
-        const authenticatedUserID = 1;
-
         const receipt = await ReceiptModel.getByID(id);
 
         if (!receipt) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
-        };
-
-        if (receipt.user_id !== authenticatedUserID) {
-            throw new Error(ERROR_MESSAGES.FORBIDDEN, 403);
         };
 
         const rowCount = await ReceiptModel.delete(id);

@@ -8,25 +8,16 @@ export const ReceiptModel = {
     
     async getByID(id) {
         const result = await db.query('SELECT * FROM receipt WHERE id = $1', [id]);
-        console.log(result.rows[0]);
         return result.rows[0]; 
     },
 
-    async create({ date, createdAt }) {
+    async create({ date }) {
         const result = await db.query(`
             INSERT INTO receipt 
-            (date, created_at) 
-            VALUES ($1, $2) RETURNING *
-        `, [date, createdAt]
+            (date) 
+            VALUES ($1) RETURNING *
+        `, [date]
         );
-        return result.rows[0];
-    },
-
-    async update(query, values) {
-        const result = await db.query(query, values);
-        if(!result) {
-            throw new Error('Failed to update receipt in the model');
-        }
         return result.rows[0];
     },
 

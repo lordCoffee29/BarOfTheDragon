@@ -9,6 +9,7 @@ export const TransactionModel = {
     async getByID(transactionID) {
         const result = await db.query('SELECT * FROM Transactions WHERE id = $1', [transactionID]);
         return result.rows[0];
+
     },
 
     async getByFilter(item, brand, category, date, price) {
