@@ -25,18 +25,33 @@ model units {
   drink_recipe drink_recipe[]
 }
 
-model transactions {
-  id        Int   @id @default(autoincrement())
-  item      String
-  brand     String
-  category  String
-  date      DateTime
-  price     Float
+model receipt {
+  id          Int      @id @default(autoincrement())
+  date        DateTime @default(now())
+  created_at  DateTime @default(now())
 
+  transactions transactions[]
+}
+
+model transactions {
+  id          Int      @id @default(autoincrement())
+  receipt_id  Int
+  line_num    Int
+  item        String
+  brand       String?
+  category    String
+  price       Float
+  note        String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime? 
+
+  receipt           receipt @relation(fields: [receipt_id], references: [id])
   liquor_bottle     liquor_bottle[]
   base_bottle       base_bottle[]
   ingredient_item   ingredient_item[]
   tool              tool[]
+
+  @@unique([receipt_id, line_num])
 }
 
 model liquor_type {
@@ -46,7 +61,7 @@ model liquor_type {
 
 model liquor {
   liquor_id Int    @id @default(autoincrement())
-  brand     String
+  brand     String?
   name      String
   mL        Int
   ABV       Int
@@ -79,7 +94,7 @@ model base_type {
 
 model base {
   id       Int     @id @default(autoincrement())
-  brand    String
+  brand    String?
   name     String
   mL       Int
   img_path String
@@ -128,7 +143,7 @@ model ingredient {
 
 model ingredient_item {
   id             Int       @id @default(autoincrement())
-  brand          String
+  brand          String?
   name           String
   quantity       Float
   unit           String
@@ -189,7 +204,7 @@ model drink_variant {
   notes             String?
 
   drink    drink    @relation(fields: [base_drink], references: [name])
-  drink_recipe  drink_recipe  @relation(fields: [drink_id], references: [drink_id])
+  drink_recipe  drink_recipe  @relation(fields: [drink_id], references: [id])
   drink_variant_ingredients drink_variant_ingredient[]
 
   @@unique([base_drink, variant_name])
@@ -200,7 +215,7 @@ model drink_variant_ingredient {
   original_ingredient    String
   replacement_ingredient String
 
-  drink_variant drink_variant @relation(fields: [variant_id], references: [variant_id])
+  drink_variant drink_variant @relation(fields: [variant_id], references: [id])
   // UI needs to enforce that original_ingredient is present, maybe a button interface for ingredients?
 
   @@id([variant_id, original_ingredient])
