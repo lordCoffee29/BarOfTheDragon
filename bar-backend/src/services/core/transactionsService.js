@@ -27,15 +27,66 @@ export const TransactionService = {
     },
 
     async createTransaction(newTransaction) {
-        const { item, brand, category, date, price } = newTransaction;
+        console.log("Service: createTransaction called");
+        console.log("Service received:", newTransaction);
 
-        if(!item || !brand || !category || !date || !price) {
-            throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
+        try {
+            const { receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at } = newTransaction;
+
+            // Convert dates properly
+            let convertedDate = null;
+            if (date) {
+                convertedDate = new Date(date);
+                if (isNaN(convertedDate.getTime())) {
+                    throw new Error('Invalid date format');
+                }
+            }
+
+            let convertedCreatedDate = null;
+            if (date) {
+                convertedCreatedDate = new Date(date);
+                if (isNaN(convertedCreatedDate.getTime())) {
+                    throw new Error('Invalid created date format');
+                }
+            }
+
+            let convertedUpdatedDate = null;
+            if (updated_at) {
+                if (updated_at) {
+                    convertedUpdatedDate = new Date(updated_at);
+                    if (isNaN(convertedUpdatedDate.getTime())) {
+                        throw new Error('Invalid updated date format');
+                    }
+                }
+            }
+
+            console.log("Transaction debugging");
+            console.log("Original date:", date);
+            console.log("Converted date:", convertedDate);
+
+            const sendTransaction = {
+                receipt_id,
+                line_num,
+                item,
+                brand,
+                category,
+                date: convertedDate,
+                price,
+                note,
+                created_at: convertedCreatedDate,
+                updated_at: convertedUpdatedDate
+            };
+
+            console.log("Sending to model:", sendTransaction);
+
+            const createdTransaction = await TransactionModel.create(sendTransaction);
+            console.log("Model returned:", createdTransaction);
+
+            return createdTransaction;
+        } catch (error) {
+            console.error("Error in createTransaction service:", error);
+            throw error;
         }
-
-        const createdTransaction = await TransactionModel.create(newTransaction);
-
-        return createdTransaction;
     },
 
     // Customize this logic

@@ -9,6 +9,7 @@ export const TransactionController = {
             res.status(200).json(transactions);
         } catch (error) {
             next(error);
+
         }
         // res.send('Get all transactions');
     },
@@ -38,8 +39,11 @@ export const TransactionController = {
                 date: req.query.date || null,
                 price: req.query.price || null,
             };
+
+            // console.log(filters);
             
             const transactions = await TransactionService.getTransactionsByFilter(filters);
+            // console.log(transactions);
             res.status(200).json(transactions);
         } catch (error) {
             next(error);
@@ -48,6 +52,8 @@ export const TransactionController = {
 
     async createTransaction(req, res, next) {
         try {
+            console.log("Controller: createTransaction called");
+            console.log("Request body:", req.body);
             const transaction = await TransactionService.createTransaction(req.body);
             res.status(200).json(transaction);
         } catch (error) {

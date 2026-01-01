@@ -12,7 +12,7 @@ export const TransactionModel = {
 
     },
 
-    async getByFilter(item, brand, category, date, price) {
+    async getByFilter(filters) {
         // const result = await db.query('SELECT * FROM Transactions WHERE id = $1', [transactionID]);
         // return result.rows[0];
 
@@ -20,26 +20,28 @@ export const TransactionModel = {
         const values = [];
         let paramCount = 1;
 
-        if (item) {
+        if (filters.item) {
             conditions.push(`item = $${paramCount++}`);
-            values.push(item);
+            values.push(filters.item);
         }
-        if (brand) {
+        if (filters.brand) {
             conditions.push(`brand = $${paramCount++}`);
-            values.push(brand);
+            values.push(filters.brand);
         }
-        if (category) {
+        if (filters.category) {
             conditions.push(`category = $${paramCount++}`);
-            values.push(category);
+            values.push(filters.category);
         }
-        if (date) {
+        if (filters.date) {
             conditions.push(`date = $${paramCount++}`);
-            values.push(date);
+            values.push(filters.date);
         }   
-        if (price) {
+        if (filters.price) {
             conditions.push(`price = $${paramCount++}`);
-            values.push(price);
+            values.push(filters.price);
         }
+
+        console.log(filters);
 
         const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
         const result = await db.query(`SELECT * FROM Transactions ${whereClause}`, values);
@@ -48,13 +50,16 @@ export const TransactionModel = {
 
     },
 
-    async create({ item, brand, category, date, price }) {
+    async create({ receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at }) {
+        console.log("Model: create called with:", { receipt_id, line_num, item, brand, category, date, price, note });
+
         const result = await db.query(`
             INSERT INTO Transactions 
-            (item, brand, category, date, price) 
-            VALUES ($1, $2, $3, $4, $5) RETURNING *
-        `, [item, brand, category, date, price]
+            (receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *
+        `, [receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at]
         );
+        console.log("Model: create result:", result.rows[0]);
         return result.rows[0];
     },
 

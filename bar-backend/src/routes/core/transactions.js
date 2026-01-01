@@ -9,7 +9,7 @@ router.get('/', TransactionController.getAllTransactions);
 
 router.get('/:id', TransactionController.getTransactionById);
 
-router.get('/filter', TransactionController.getTransactionsByFilter);
+router.get('/filter/:filter', TransactionController.getTransactionsByFilter);
 
 router.post('/', validateData(createTransactionSchema), TransactionController.createTransaction);
 
