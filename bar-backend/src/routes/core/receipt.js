@@ -9,6 +9,8 @@ router.get('/', ReceiptController.getAllReceipts);
 
 router.get('/:id', ReceiptController.getReceiptById);
 
+router.get('/date/:date', ReceiptController.getTransactionsByReceiptDate);
+
 router.post('/', validateData(createReceiptSchema), ReceiptController.createReceipt);
 
 router.delete('/:id', ReceiptController.deleteReceipt);

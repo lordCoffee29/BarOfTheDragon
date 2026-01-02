@@ -11,6 +11,12 @@ export const ReceiptModel = {
         return result.rows[0]; 
     },
 
+    async getTransactionsByReceiptDate(date) {
+        console.log(date);
+        const result = await db.query('SELECT * FROM transactions WHERE date = $1', [date]);
+        return result.rows;
+    },
+
     async create({ date }) {
         const result = await db.query(`
             INSERT INTO receipt 

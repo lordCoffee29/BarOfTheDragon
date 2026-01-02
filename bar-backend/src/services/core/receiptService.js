@@ -17,6 +17,17 @@ export const ReceiptService = {
         return receipt;
     },
 
+    async getTransactionsByReceiptDate(date) {
+        console.log("Service: ", date);
+        const transactions = await ReceiptModel.getTransactionsByReceiptDate(date);
+        if(!transactions) {
+            const error = new Error(ERROR_MESSAGES.ITEM_NOT_FOUND);
+            error.statusCode = 404;
+            throw error;
+        }
+        return transactions;
+    },
+
     async createReceipt(newReceipt) {
         const { date } = newReceipt;
         if (!date) {

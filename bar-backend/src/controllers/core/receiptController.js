@@ -28,6 +28,17 @@ export const ReceiptController = {
         // res.send(`Get transaction by ID: ${transactionID}`);
     },
 
+    async getTransactionsByReceiptDate(req, res, next) {
+        try {
+            const date = req.query.date;
+            console.log("Controller: ", date);
+            const transactions = await ReceiptService.getTransactionsByReceiptDate(date);
+            res.status(200).json(transactions);
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async createReceipt(req, res, next) {
         try {
             const receipt = await ReceiptService.createReceipt(req.body);

@@ -46,6 +46,7 @@ model transactions {
   created_at  DateTime @default(now())
   updated_at  DateTime? 
 
+  // TO-DO: trans date refs receipt date
   receipt           receipt @relation(fields: [receipt_id], references: [id])
   liquor_bottle     liquor_bottle[]
   base_bottle       base_bottle[]
