@@ -18,8 +18,9 @@ export const TransactionService = {
         return transaction;
     },
 
-    async getTransactionsByFilterAndSort(item, brand, category, dateStart, dateEnd, dateDir, priceMin, priceMax, priceDir, sortBy, sortOrder) {
-        const transaction = await TransactionModel.getByFilterAndSort(item, brand, category, dateStart, dateEnd, dateDir, priceMin, priceMax, priceDir, sortBy, sortOrder);
+    async getTransactionsByFilterAndSort(filters) {
+        console.log("Service layer: ", filters);
+        const transaction = await TransactionModel.getByFilterAndSort(filters);
         if(!transaction) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }

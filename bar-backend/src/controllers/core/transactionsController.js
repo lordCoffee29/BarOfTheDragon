@@ -48,7 +48,7 @@ export const TransactionController = {
 
             // item, brand, category, dateStart, dateEnd, dateDir, priceMin, priceMax, priceDir, sortBy, sortOrder
 
-            // console.log(filters);
+            console.log(filters);
             
             const transactions = await TransactionService.getTransactionsByFilterAndSort(filters);
             // console.log(transactions);
