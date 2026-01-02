@@ -38,6 +38,9 @@ export const TransactionModel = {
             values.push(filters.category);
         }
 
+        // Always exclude Tax and Fee categories
+        conditions.push(`category NOT IN ('Tax', 'Fee')`);
+
         if (filters.dateStart && filters.dateEnd && filters.dateDir) {
             if (filters.dateDir === 'in') {
                 conditions.push(`date::timestamp >= $${paramCount++}::timestamp AND date::timestamp <= $${paramCount++}::timestamp`);
@@ -97,7 +100,7 @@ export const TransactionModel = {
         console.log(conditions);
         console.log(sort);
 
-        const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
+        const whereClause = conditions.length > 0 ? 'WHERE category NOT IN (\'Tax\', \'Fee\') AND ' + conditions.join(' AND ') : '';
         const sortClause = sort.length > 0 ? 'ORDER BY ' + sort[0] : 'ORDER BY id ASC';
 
         console.log("Model: clauses: ");
@@ -126,6 +129,7 @@ export const TransactionModel = {
         return result.rows[0].price;
         
     },
+
 
     async getSorted(sortBy, sortOrder) {
         const result = await db.query(`SELECT * FROM transactions ORDER BY ${sortBy} ${sortOrder}`);
