@@ -18,8 +18,8 @@ export const TransactionService = {
         return transaction;
     },
 
-    async getTransactionsByFilter(filters) {
-        const transaction = await TransactionModel.getByFilter(filters);
+    async getTransactionsByFilterAndSort(item, brand, category, dateStart, dateEnd, dateDir, priceMin, priceMax, priceDir, sortBy, sortOrder) {
+        const transaction = await TransactionModel.getByFilterAndSort(item, brand, category, dateStart, dateEnd, dateDir, priceMin, priceMax, priceDir, sortBy, sortOrder);
         if(!transaction) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }
@@ -35,6 +35,23 @@ export const TransactionService = {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }
         return price;
+    },
+
+    async getSorted(sortBy, sortOrder) {
+        let validBy = ['id', 'item', 'brand', 'category', 'date', 'price'];
+        let validSortOrder = ['ASC', 'DESC'];
+        if (!validBy.includes(sortBy)) {
+            throw new Error('Invalid sort by field');
+        }
+        if (!validSortOrder.includes(sortOrder)) {
+            throw new Error('Invalid sort order');
+        }
+
+        const sorted = await TransactionModel.getSorted(sortBy, sortOrder);
+        if(!sorted) {
+            throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
+        }
+        return sorted;
     },
 
     async createTransaction(newTransaction) {

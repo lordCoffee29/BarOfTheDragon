@@ -9,9 +9,11 @@ router.get('/', TransactionController.getAllTransactions);
 
 router.get('/:id', TransactionController.getTransactionById);
 
-router.get('/filter/:filter', TransactionController.getTransactionsByFilter);
+router.get('/filter/:filter', TransactionController.getTransactionsByFilterAndSort);
 
 router.get('/auto-price/:price', TransactionController.getAutoPrice);
+
+router.get('/sorted/:sortParams', TransactionController.getSorted);
 
 router.post('/', validateData(createTransactionSchema), TransactionController.createTransaction);
 

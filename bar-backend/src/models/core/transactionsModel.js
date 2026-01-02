@@ -12,39 +12,88 @@ export const TransactionModel = {
 
     },
 
-    async getByFilter(filters) {
+    async getByFilterAndSort(item, brand, category, dateStart, dateEnd, dateDir, priceMin, priceMax, priceDir, sortBy, sortOrder) {
         // const result = await db.query('SELECT * FROM transactions WHERE id = $1', [transactionID]);
         // return result.rows[0];
 
+        //id, item, brand, category, dateStart, dateEnd, dateDir, priceMin, priceMax, priceDir, sortBy, sortOrder
+
         const conditions = [];
+        const sort = [];
         const values = [];
         let paramCount = 1;
 
-        if (filters.item) {
+        if (item) {
             conditions.push(`item = $${paramCount++}`);
-            values.push(filters.item);
-        }
-        if (filters.brand) {
-            conditions.push(`brand = $${paramCount++}`);
-            values.push(filters.brand);
-        }
-        if (filters.category) {
-            conditions.push(`category = $${paramCount++}`);
-            values.push(filters.category);
-        }
-        if (filters.date) {
-            conditions.push(`date = $${paramCount++}`);
-            values.push(filters.date);
-        }   
-        if (filters.price) {
-            conditions.push(`price = $${paramCount++}`);
-            values.push(filters.price);
+            values.push(item);
         }
 
-        console.log(filters);
+        if (brand) {
+            conditions.push(`brand = $${paramCount++}`);
+            values.push(brand);
+        }
+
+        if (category) {
+            conditions.push(`category = $${paramCount++}`);
+            values.push(category);
+        }
+
+        if (dateStart && dateEnd && dateDir) {
+            if (dateDir === 0) {
+                conditions.push(`date BETWEEN $${paramCount++} AND $${paramCount++}`);
+                values.push(dateStart, dateEnd);
+            } else if (dateDir === 1) {
+                conditions.push(`date <= $${paramCount++} OR date >= $${paramCount++}`);
+                values.push(dateStart, dateEnd);
+            }
+        } 
+
+        if (dateStart && !dateEnd) {
+            conditions.push(`date >= $${paramCount++}`);
+            values.push(dateStart);
+        }
+
+        if (!dateStart && dateEnd) {
+            conditions.push(`date <= $${paramCount++}`);
+            values.push(dateEnd);
+        }
+            // conditions.push(`date = $${paramCount++}`);
+            // values.push(filters.date);
+
+        if (priceMin && priceMax && priceDir) {
+            if (priceDir === 0) {
+                conditions.push(`price BETWEEN $${paramCount++} AND $${paramCount++}`);
+                values.push(priceMin, priceMax);
+            } else if (priceDir === 1) {
+                conditions.push(`price <= $${paramCount++} OR price >= $${paramCount++}`);
+                values.push(priceMin, priceMax);
+            }
+        } 
+
+        if (priceMin && !priceMax) {
+            conditions.push(`price >= $${paramCount++}`);
+            values.push(priceMin);
+        }
+
+        if (!priceMin && priceMax) {
+            conditions.push(`price <= $${paramCount++}`);
+            values.push(priceMax);
+        }
+
+        if (sortBy && sortOrder) {
+            sort.push(`${sortBy} ${sortOrder}, id ASC`);
+        }
+
+        console.log(conditions);
+        console.log(sort);
 
         const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
-        const result = await db.query(`SELECT * FROM transactions ${whereClause}`, values);
+        const sortClause = sort.length > 0 ? 'ORDER BY ' + sort[0] + sort[1] : 'ORDER BY id ASC';
+
+        // console.log('WHERE clause:', whereClause);
+        // console.log('SORT clause:', sortClause);
+
+        const result = await db.query(`SELECT * FROM transactions ${whereClause} ${sortClause}`, values);
         
         return result.rows;
 
@@ -64,6 +113,11 @@ export const TransactionModel = {
         }
         return result.rows[0].price;
         
+    },
+
+    async getSorted(sortBy, sortOrder) {
+        const result = await db.query(`SELECT * FROM transactions ORDER BY ${sortBy} ${sortOrder}`);
+        return result.rows;
     },
 
     async create({ receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at }) {

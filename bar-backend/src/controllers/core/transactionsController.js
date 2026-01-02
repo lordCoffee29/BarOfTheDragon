@@ -30,19 +30,27 @@ export const TransactionController = {
         // res.send(`Get transaction by ID: ${transactionID}`);
     },
 
-    async getTransactionsByFilter(req, res, next) {
+    async getTransactionsByFilterAndSort(req, res, next) {
         try {
             const filters = {
                 item: req.query.item || null,
                 brand: req.query.brand || null,
                 category: req.query.category || null,
-                date: req.query.date || null,
-                price: req.query.price || null,
+                dateStart: req.query.dateStart || null,
+                dateEnd: req.query.dateEnd || null,
+                dateDir: req.query.dateDir || null,
+                priceMin: req.query.priceMin || null,
+                priceMax: req.query.priceMax || null,
+                priceDir: req.query.priceDir || null,
+                sortBy: req.query.sortBy || null,
+                sortOrder: req.query.sortOrder || null
             };
+
+            // item, brand, category, dateStart, dateEnd, dateDir, priceMin, priceMax, priceDir, sortBy, sortOrder
 
             // console.log(filters);
             
-            const transactions = await TransactionService.getTransactionsByFilter(filters);
+            const transactions = await TransactionService.getTransactionsByFilterAndSort(filters);
             // console.log(transactions);
             res.status(200).json(transactions);
         } catch (error) {
@@ -61,6 +69,18 @@ export const TransactionController = {
             const price = await TransactionService.getAutoPrice(filters);
             res.status(200).json(price);
             console.log("Controller layer passed");
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async getSorted(req, res, next) {
+        try {
+            const sortBy = req.query.sortBy || 'id';
+            const sortOrder = req.query.sortOrder || 'ASC';
+
+            const sortedTransactions = await TransactionService.getSorted(sortBy, sortOrder);
+            res.status(200).json(sortedTransactions);
         } catch (error) {
             next(error);
         }
