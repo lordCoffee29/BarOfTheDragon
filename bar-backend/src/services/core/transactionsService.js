@@ -26,6 +26,17 @@ export const TransactionService = {
         return transaction;
     },
 
+    async getAutoPrice(filters) {
+        console.log("Service layer activated");
+        const { item, brand } = filters;
+
+        const price = await TransactionModel.getAutoPrice(item, brand);
+        if(!price) {
+            throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
+        }
+        return price;
+    },
+
     async createTransaction(newTransaction) {
         console.log("Service: createTransaction called");
         console.log("Service received:", newTransaction);

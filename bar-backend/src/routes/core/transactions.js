@@ -11,6 +11,8 @@ router.get('/:id', TransactionController.getTransactionById);
 
 router.get('/filter/:filter', TransactionController.getTransactionsByFilter);
 
+router.get('/auto-price/:price', TransactionController.getAutoPrice);
+
 router.post('/', validateData(createTransactionSchema), TransactionController.createTransaction);
 
 router.patch('/:id', validateData(updateTransactionSchema), TransactionController.updateTransaction);

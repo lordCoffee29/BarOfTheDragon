@@ -2,18 +2,18 @@ import db from '../../config/db.js';
 
 export const TransactionModel = {
     async getAll() {
-        const result = await db.query('SELECT * FROM Transactions');
+        const result = await db.query('SELECT * FROM transactions');
         return result.rows;
     },
     
     async getByID(transactionID) {
-        const result = await db.query('SELECT * FROM Transactions WHERE id = $1', [transactionID]);
+        const result = await db.query('SELECT * FROM transactions WHERE id = $1', [transactionID]);
         return result.rows[0];
 
     },
 
     async getByFilter(filters) {
-        // const result = await db.query('SELECT * FROM Transactions WHERE id = $1', [transactionID]);
+        // const result = await db.query('SELECT * FROM transactions WHERE id = $1', [transactionID]);
         // return result.rows[0];
 
         const conditions = [];
@@ -44,17 +44,33 @@ export const TransactionModel = {
         console.log(filters);
 
         const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
-        const result = await db.query(`SELECT * FROM Transactions ${whereClause}`, values);
+        const result = await db.query(`SELECT * FROM transactions ${whereClause}`, values);
         
         return result.rows;
 
+    },
+
+    async getAutoPrice(item, brand) {
+
+        console.log("Model: getAutoPrice called with:", { item, brand });
+        const result = await db.query(
+            'SELECT price FROM transactions WHERE item = $1 AND brand = $2',
+            [item, brand]
+        );
+        
+        console.log("Model: getAutoPrice result:", result.rows[0]);
+        if (result.rows.length === 0) {
+            return null;
+        }
+        return result.rows[0].price;
+        
     },
 
     async create({ receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at }) {
         console.log("Model: create called with:", { receipt_id, line_num, item, brand, category, date, price, note });
 
         const result = await db.query(`
-            INSERT INTO Transactions 
+            INSERT INTO transactions 
             (receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *
         `, [receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at]
@@ -72,7 +88,7 @@ export const TransactionModel = {
     },
 
     async delete(transactionID) {
-        const result = await db.query('DELETE FROM Transactions WHERE id = $1 RETURNING *', [transactionID]);
+        const result = await db.query('DELETE FROM transactions WHERE id = $1 RETURNING *', [transactionID]);
         return result.rowCount;
     }
 };

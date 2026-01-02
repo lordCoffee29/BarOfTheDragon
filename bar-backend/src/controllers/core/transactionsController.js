@@ -50,6 +50,22 @@ export const TransactionController = {
         }
     },
 
+    async getAutoPrice(req, res, next) {
+        console.log("Controller: getAutoPrice called");
+        try {
+            const filters = {
+                item: req.query.item || null,
+                brand: req.query.brand || null,
+            };
+
+            const price = await TransactionService.getAutoPrice(filters);
+            res.status(200).json(price);
+            console.log("Controller layer passed");
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async createTransaction(req, res, next) {
         try {
             console.log("Controller: createTransaction called");
