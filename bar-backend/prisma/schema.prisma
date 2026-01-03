@@ -31,6 +31,12 @@ model receipt {
   created_at  DateTime @default(now())
 
   transactions transactions[]
+  @@unique([id, date])
+}
+
+model purchase_category {
+  name   String @id
+  transactions transactions[]
 }
 
 model transactions {
@@ -45,9 +51,12 @@ model transactions {
   note        String?
   created_at  DateTime @default(now())
   updated_at  DateTime? 
+  quantity    Int
+  pack_size   Int?
 
   // TO-DO: trans date refs receipt date
-  receipt           receipt @relation(fields: [receipt_id], references: [id])
+  purchase_category  purchase_category @relation(fields: [category], references: [name])
+  receipt           receipt @relation(fields: [receipt_id, date], references: [id, date])
   liquor_bottle     liquor_bottle[]
   base_bottle       base_bottle[]
   ingredient_item   ingredient_item[]
@@ -70,6 +79,7 @@ model liquor {
   img_path  String
   type      String
   present   Boolean
+  price     Float
 
   liquor_type liquor_type @relation(fields: [type], references: [name])
   liquor_bottle liquor_bottle[]
@@ -102,6 +112,7 @@ model base {
   img_path String
   type     String
   present  Boolean
+  price    Float
 
   base_type base_type @relation(fields: [type], references: [name])
   base_bottle base_bottle[]
@@ -135,6 +146,7 @@ model ingredient {
   type      String   
   img_path  String
   present   Boolean
+  price     Float
 
   ingredient_type ingredient_type @relation(fields: [type], references: [name])
   units            units            @relation(fields: [unit], references: [name])
@@ -169,6 +181,8 @@ model tool {
   quantity Int
   unit     String
   type     String
+  price    Float
+
 
   tool_type tool_type @relation(fields: [type], references: [name])
   transactions transactions @relation(fields: [transaction_id], references: [id])

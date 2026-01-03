@@ -60,7 +60,7 @@ export const TransactionService = {
         console.log("Service received:", newTransaction);
 
         try {
-            const { receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at } = newTransaction;
+            const { receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at, quantity, pack_size } = newTransaction;
 
             // Convert dates properly
             let convertedDate = null;

@@ -136,14 +136,15 @@ export const TransactionModel = {
         return result.rows;
     },
 
-    async create({ receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at }) {
-        console.log("Model: create called with:", { receipt_id, line_num, item, brand, category, date, price, note });
+    async create({ receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at, quantity, pack_size }) {
+        console.log("Model: create called with:", { receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at, quantity, pack_size });
 
         const result = await db.query(`
             INSERT INTO transactions 
-            (receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *
-        `, [receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at]
+            (receipt_id, line_num, item, brand, category, date, price, note, created_at, updated_at, quantity, pack_size)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *
+        `, [receipt_id, line_num, item, brand, category, date, 
+            price, note, created_at, updated_at, quantity, pack_size]
         );
         console.log("Model: create result:", result.rows[0]);
         return result.rows[0];
