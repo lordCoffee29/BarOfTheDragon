@@ -16,12 +16,15 @@ export const TransactionController = {
 
     async getTransactionById(req, res, next) {
         try {
-            const transactionID = parseInt(req.params.id);
+            const transactionID = parseInt(req.query.id);
+            const mode = req.query.mode;
+
+            console.log(transactionID, mode);
             // console.log(transactionID);
             if (isNaN(transactionID)) {
                 return res.status(400).send({ message: 'Invalid transaction ID' });
             }
-            const transaction = await TransactionService.getTransactionByID(transactionID);
+            const transaction = await TransactionService.getTransactionByID(transactionID, mode);
             res.status(200).json(transaction);
         } catch (error) {
             next(error);

@@ -74,8 +74,8 @@ model liquor {
   liquor_id Int    @id @default(autoincrement())
   brand     String?
   name      String
-  mL        Int
-  ABV       Int
+  ml        Int
+  abv       Int
   img_path  String
   type      String
   present   Boolean
@@ -84,7 +84,7 @@ model liquor {
   liquor_type liquor_type @relation(fields: [type], references: [name])
   liquor_bottle liquor_bottle[]
 
-  @@unique([brand, name, mL])
+  @@unique([brand, name, ml])
 }
 
 model liquor_bottle {
@@ -108,7 +108,7 @@ model base {
   id       Int     @id @default(autoincrement())
   brand    String?
   name     String
-  mL       Int
+  ml       Int
   img_path String
   type     String
   present  Boolean
@@ -117,7 +117,7 @@ model base {
   base_type base_type @relation(fields: [type], references: [name])
   base_bottle base_bottle[]
 
-  @@unique([brand, name, mL])
+  @@unique([brand, name, ml])
 }
 
 model base_bottle {

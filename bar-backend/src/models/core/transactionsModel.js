@@ -6,9 +6,41 @@ export const TransactionModel = {
         return result.rows;
     },
     
-    async getByID(transactionID) {
-        const result = await db.query('SELECT * FROM transactions WHERE id = $1', [transactionID]);
-        return result.rows[0];
+    async getByID(transactionID, mode) {
+        // const result = await db.query('SELECT * FROM transactions WHERE id = $1', [transactionID]);
+        // return result.rows[0];
+
+        if (mode === "Liquor") {
+            const query = `
+                SELECT 
+                    t.item,
+                    t.pack_size,
+                    t.brand,
+                    l.mL,
+                    l.ABV,
+                    l.type,
+                    t.date,
+                    t.quantity,
+                    t.price,
+                    t.category,
+                    r.date AS receipt_date
+                FROM transactions t
+                INNER JOIN liquor_bottle lb ON t.id = lb.transaction_id
+                INNER JOIN liquor l ON lb.liquor_id = l.liquor_id
+                INNER JOIN receipt r ON t.receipt_id = r.id
+                WHERE t.id = $1
+            `;
+
+            const result = await db.query(query, [transactionID])
+            console.log(result);
+            return result.rows[0];
+        } else if (mode === "Base") {
+
+        } else if (mode == "Ingredient") {
+
+        } else if (mode == "Tool") {
+
+        }
 
     },
 

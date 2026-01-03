@@ -10,8 +10,8 @@ export const TransactionService = {
         return TransactionModel.getAll();
     },
 
-    async getTransactionByID(transactionID) {
-        const transaction = await TransactionModel.getByID(transactionID);
+    async getTransactionByID(transactionID, mode) {
+        const transaction = await TransactionModel.getByID(transactionID, mode);
         if(!transaction) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }
