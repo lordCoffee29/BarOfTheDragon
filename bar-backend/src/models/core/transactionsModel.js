@@ -5,13 +5,20 @@ export const TransactionModel = {
         const result = await db.query('SELECT * FROM transactions');
         return result.rows;
     },
+
+    async getList() {
+        const result = await db.query('SELECT item, brand, category, date, price FROM transactions');
+        return result.rows;
+    },
     
     async getByID(transactionID, mode) {
         // const result = await db.query('SELECT * FROM transactions WHERE id = $1', [transactionID]);
         // return result.rows[0];
 
+        let query = null;
+
         if (mode === "Liquor") {
-            const query = `
+            query = `
                 SELECT 
                     t.item,
                     t.pack_size,
@@ -30,17 +37,70 @@ export const TransactionModel = {
                 INNER JOIN receipt r ON t.receipt_id = r.id
                 WHERE t.id = $1
             `;
-
-            const result = await db.query(query, [transactionID])
-            console.log(result);
-            return result.rows[0];
         } else if (mode === "Base") {
+            query = `
+                SELECT 
+                    t.item,
+                    t.pack_size,
+                    t.brand,
+                    b.mL,
+                    b.type,
+                    t.date,
+                    t.quantity,
+                    t.price,
+                    t.category,
+                    r.date AS receipt_date
+                FROM transactions t
+                INNER JOIN base_bottle bb ON t.id = bb.transaction_id
+                INNER JOIN base b ON bb.base_id = b.id
+                INNER JOIN receipt r ON t.receipt_id = r.id
+                WHERE t.id = $1
+            `;
 
         } else if (mode == "Ingredient") {
-
+            query = `
+                SELECT 
+                    t.item,
+                    t.pack_size,
+                    t.brand,
+                    i.quantity,
+                    i.unit,
+                    i.type,
+                    t.date,
+                    t.quantity,
+                    t.price,
+                    t.category,
+                    r.date AS receipt_date
+                FROM transactions t
+                INNER JOIN ingredient_item ii ON t.id = ii.transaction_id
+                INNER JOIN ingredient i ON ii.ingredient_id = i.id
+                INNER JOIN receipt r ON t.receipt_id = r.id
+                WHERE t.id = $1
+            `;
         } else if (mode == "Tool") {
-
+            query = `
+                SELECT 
+                    t.item,
+                    t.pack_size,
+                    t.brand,
+                    tl.quantity,
+                    tl.unit,
+                    tl.type,
+                    t.date,
+                    t.quantity,
+                    t.price,
+                    t.category,
+                    r.date AS receipt_date
+                FROM transactions t
+                INNER JOIN tool tl ON t.id = tl.transaction_id
+                INNER JOIN receipt r ON t.receipt_id = r.id
+                WHERE t.id = $1
+            `;
         }
+
+        const result = await db.query(query, [transactionID])
+        console.log(result);
+        return result.rows[0];
 
     },
 

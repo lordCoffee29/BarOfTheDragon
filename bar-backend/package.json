@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "prisma": {
+    "seed": "node --env-file=.env -r ts-node/register prisma/seed.ts"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node --env-file=.env --watch src/index.js",
@@ -29,8 +32,9 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
-    "@types/node": "^24.3.1",
+    "@types/node": "^24.10.4",
+    "ts-node": "^10.9.2",
     "tsx": "^4.20.5",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   }
 }

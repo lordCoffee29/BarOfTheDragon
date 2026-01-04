@@ -21,16 +21,24 @@ model units {
   multiplier  Float
 
   ingredient  ingredient[]
-  ingredient_item ingredient_item[]
   drink_recipe drink_recipe[]
+}
+
+model store {
+  address  String @id
+  name     String
+
+  receipt receipt[]
 }
 
 model receipt {
   id          Int      @id @default(autoincrement())
   date        DateTime @default(now())
+  store_loc   String
   created_at  DateTime @default(now())
 
-  transactions transactions[]
+  transactions    transactions[]
+  store           store @relation(fields: [store_loc], references: [address])
   @@unique([id, date])
 }
 
@@ -157,16 +165,12 @@ model ingredient {
 
 model ingredient_item {
   id             Int       @id @default(autoincrement())
-  brand          String?
-  name           String
-  quantity       Float
-  unit           String
   transaction_id Int
+  ingredient_id  Int
   date_opened    DateTime?
   date_finished  DateTime?
 
-  ingredient  ingredient  @relation(fields: [name, quantity, unit], references: [name, quantity, unit])
-  units        units        @relation(fields: [unit], references: [name])
+  ingredient  ingredient  @relation(fields: [ingredient_id], references: [id])
   transactions transactions @relation(fields: [transaction_id], references: [id])
 }
 
