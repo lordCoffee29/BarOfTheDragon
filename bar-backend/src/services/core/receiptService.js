@@ -9,6 +9,15 @@ export const ReceiptService = {
 
     async getListView(filters) {
         const receipts = await ReceiptModel.getListView(filters);
+
+        if (filters.priceMin && filters.priceMax) {
+            if (parseFloat(filters.priceMin) > parseFloat(filters.priceMax)) {
+                const error = new Error('Minimum price cannot be greater than maximum price');
+                error.statusCode = 400;
+                throw error;
+            }
+        }
+
         if(!receipts) {
             const error = new Error(ERROR_MESSAGES.ITEM_NOT_FOUND);
             error.statusCode = 404;
