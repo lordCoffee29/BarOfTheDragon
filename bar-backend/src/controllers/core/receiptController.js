@@ -12,6 +12,32 @@ export const ReceiptController = {
         // res.send('Get all transactions');
     },
 
+    async getListView(req, res, next) {
+        try {
+            const filters = {
+                storeName: req.query.storeName || null,
+                dateStart: req.query.dateStart || null,
+                dateEnd: req.query.dateEnd || null,
+                dateDir: req.query.dateDir || null,
+                priceMin: req.query.priceMin || null,
+                priceMax: req.query.priceMax || null,
+                priceDir: req.query.priceDir || null,
+                sortBy: req.query.sortBy || null,
+                sortOrder: req.query.sortOrder || null
+            };
+
+            // startDate, endDate, dateDir, store_name, minPrice, maxPrice, priceDir, sortBy, sortOrder
+
+            console.log(filters);
+            
+            const receipts = await ReceiptService.getListView(filters);
+            // console.log(transactions);
+            res.status(200).json(receipts);
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async getReceiptById(req, res, next) {
         try {
             const receiptID = parseInt(req.params.id);
@@ -41,6 +67,7 @@ export const ReceiptController = {
 
     async createReceipt(req, res, next) {
         try {
+            console.log("Controller: createReceipt called with:", req.body.date, req.body.store_loc);
             const receipt = await ReceiptService.createReceipt(req.body);
             res.status(200).json(receipt);
         } catch (error) {
@@ -49,6 +76,23 @@ export const ReceiptController = {
         // const transaction = req.body.item;
         // console.log(req.body);
         // res.send(transaction);
+    },
+
+    async updateReceipt(req, res, next) {
+        try {
+            const receiptID = parseInt(req.params.id);
+            const updatedData = req.body;
+
+            if (isNaN(receiptID)) {
+                return res.status(400).send({ message: 'Invalid receipt ID' });
+            }
+
+            // Assuming ReceiptService has an updateReceipt method
+            const updatedReceipt = await ReceiptService.updateReceipt(receiptID, updatedData);
+            res.status(200).json(updatedReceipt);
+        } catch (error) {
+            next(error);
+        }
     },
 
     async deleteReceipt(req, res, next) {

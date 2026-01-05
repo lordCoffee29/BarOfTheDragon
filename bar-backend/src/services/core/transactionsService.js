@@ -103,7 +103,9 @@ export const TransactionService = {
                 price,
                 note,
                 created_at: convertedCreatedDate,
-                updated_at: convertedUpdatedDate
+                updated_at: convertedUpdatedDate,
+                quantity,
+                pack_size
             };
 
             console.log("Sending to model:", sendTransaction);
