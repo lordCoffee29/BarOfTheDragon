@@ -2,14 +2,14 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-export default function HomeScreen() {
+export default function Dashboard() {
   const router = useRouter();
   
   const circles = [
-    { id: 1, label: 'Transactions', yOffset: 60, route: '/transactions' },
-    { id: 2, label: 'Inventory', yOffset: 0, route: '/inventory' },
-    { id: 3, label: 'Recipes', yOffset: 0, route: '/recipes' },
-    { id: 4, label: 'Insights', yOffset: 60, route: '/analytics' }
+    { id: 1, label: 'Transactions', yOffset: 60, route: '/(tabs)/transactions' },
+    { id: 2, label: 'Inventory', yOffset: 0, route: '/(tabs)/inventory' },
+    { id: 3, label: 'Recipes', yOffset: 0, route: '/(tabs)/recipes' },
+    { id: 4, label: 'Insights', yOffset: 60, route: '/(tabs)/analytics' }
   ];
 
   return (
@@ -51,7 +51,6 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 1200,
     height: 300,
-    marginTop: -150,
   },
   circleWrapper: {
     position: 'relative',

@@ -11,12 +11,12 @@ export const IngredientModel = {
         return result.rows[0];
     },
 
-    async create({ name, quantity, unit, brand, type, imgPath, present }) {
+    async create({ name, quantity, unit, brand, type, imgPath, present, price }) {
         const result = await db.query(`
             INSERT INTO ingredient 
-            (name, quantity, unit, brand, type, img_path, present) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
-        `, [name, quantity, unit, brand, type, imgPath, present]
+            (name, quantity, unit, brand, type, img_path, present, price) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *
+        `, [name, quantity, unit, brand, type, imgPath, present, price]
         );
         return result.rows[0];
     },

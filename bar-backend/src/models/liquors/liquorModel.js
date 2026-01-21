@@ -11,12 +11,12 @@ export const LiquorModel = {
         return result.rows[0];
     },
 
-    async create({ brand, name, ml, abv, imgPath, type, present }) {
+    async create({ brand, name, ml, abv, imgPath, type, present, price }) {
         const result = await db.query(`
-            INSERT INTO ingredient 
-            (brand, name, mL, ABV, img_path, type, present) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
-        `, [brand, name, ml, abv, imgPath, type, present]
+            INSERT INTO liquor 
+            (brand, name, mL, ABV, img_path, type, present, price) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *
+        `, [brand, name, ml, abv, imgPath, type, present, price]
         );
         return result.rows[0];
     },
@@ -30,7 +30,7 @@ export const LiquorModel = {
     },
 
     async delete(liquorID) {
-        const result = await db.query('DELETE FROM liquor WHERE id = $1 RETURNING *', [liquorId]);
+        const result = await db.query('DELETE FROM liquor WHERE id = $1 RETURNING *', [liquorID]);
         return result.rowCount;
     }
 };

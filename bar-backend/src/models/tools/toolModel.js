@@ -11,12 +11,12 @@ export const ToolModel = {
         return result.rows[0];
     },
 
-    async create({ name, transactionID, quantity, unit, type }) {
+    async create({ name, transactionID, quantity, unit, type, price }) {
         const result = await db.query(`
-            INSERT INTO drink_recipe 
-            (name, transaction_id, quantity, unit, type) 
-            VALUES ($1, $2, $3, $4, $5) RETURNING *
-        `, [name, transactionID, quantity, unit, type]
+            INSERT INTO tool 
+            (name, transaction_id, quantity, unit, type, price) 
+            VALUES ($1, $2, $3, $4, $5, $6) RETURNING *
+        `, [name, transactionID, quantity, unit, type, price]
         );
         return result.rows[0];
     },
