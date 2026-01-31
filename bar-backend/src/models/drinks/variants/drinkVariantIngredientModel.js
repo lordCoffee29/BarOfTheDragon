@@ -1,6 +1,6 @@
 import db from '../../config/db.js';
 
-export const DrinkVariantIngredient = {
+export const DrinkVariantIngredientModel = {
     async getAll() {
         const result = await db.query('SELECT * FROM drink_variant_ingredient');
         return result.rows;
@@ -21,10 +21,23 @@ export const DrinkVariantIngredient = {
         return result.rows[0];
     },
 
-    async update(query, values) {
+    async update(variantID, originalIngredient, newValues) {
+        const fields = Object.keys(newValues);
+        const values = Object.values(newValues);
+        values.push(variantID, originalIngredient);
+        
+        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
+        
+        const query = `
+            UPDATE drink_variant_ingredient 
+            SET ${setClause} 
+            WHERE variant_id = $${values.length - 1} AND original_ingredient = $${values.length}
+            RETURNING *
+        `;
+        
         const result = await db.query(query, values);
         if(!result) {
-            throw new Error('Failed to update base type in the model');
+            throw new Error('Failed to update drink variant ingredient in the model');
         }
         return result.rows[0];
     },

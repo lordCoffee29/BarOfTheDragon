@@ -21,7 +21,20 @@ export const ToolTypeModel = {
         return result.rows[0];
     },
 
-    async update(query, values) {
+    async update(name, newValues) {
+        const fields = Object.keys(newValues);
+        const values = Object.values(newValues);
+        values.push(name);
+        
+        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
+        
+        const query = `
+            UPDATE tool_type 
+            SET ${setClause} 
+            WHERE name = $${values.length}
+            RETURNING *
+        `;
+        
         const result = await db.query(query, values);
         if(!result) {
             throw new Error('Failed to update tool_type in the model');

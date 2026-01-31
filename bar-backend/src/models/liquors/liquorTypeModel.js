@@ -1,6 +1,6 @@
 import db from '../../config/db.js';
 
-export const LiquorType = {
+export const LiquorTypeModel = {
     async getAll() {
         const result = await db.query('SELECT * FROM liquor_type');
         return result.rows;
@@ -21,7 +21,20 @@ export const LiquorType = {
         return result.rows[0];
     },
 
-    async update(query, values) {
+    async update(name, newValues) {
+        const fields = Object.keys(newValues);
+        const values = Object.values(newValues);
+        values.push(name);
+        
+        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
+        
+        const query = `
+            UPDATE liquor_type 
+            SET ${setClause} 
+            WHERE name = $${values.length}
+            RETURNING *
+        `;
+        
         const result = await db.query(query, values);
         if(!result) {
             throw new Error('Failed to update liquor_type in the model');

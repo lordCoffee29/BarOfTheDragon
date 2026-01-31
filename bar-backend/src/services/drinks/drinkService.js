@@ -32,35 +32,12 @@ export const DrinkService = {
 
     // Customize this logic
     async updateDrink(name, newValues) {
-        const { imgPath } = newValues;
-
-        const fields = Object.keys(newValues);
-        const values = Object.values(newValues);
-        values.push(id); // For the WHERE clause
-
-        console.log(fields);
-        console.log(values);
-
-        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
-        // console.log(setClause);
-        console.log(setClause);
-
-        // This ID mechanism is more secure against SQL injection
-        const query = `
-            UPDATE drink 
-            SET ${setClause} 
-            WHERE id = $${values.length}
-            RETURNING *
-        `
-
-
-        if(!imgPath) {
+        if(Object.keys(newValues).length === 0) {
             throw new Error('Missing required fields');
         }
 
-        const updatedDrink = await DrinkModel.update(query, values);
+        const updatedDrink = await DrinkModel.update(name, newValues);
         
-
         if(!updatedDrink) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }

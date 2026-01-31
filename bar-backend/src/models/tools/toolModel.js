@@ -6,8 +6,8 @@ export const ToolModel = {
         return result.rows;
     },
     
-    async getByID(toolID) {
-        const result = await db.query('SELECT * FROM tool WHERE id = $1', [toolID]);
+    async getByID(name) {
+        const result = await db.query('SELECT * FROM tool WHERE name = $1', [name]);
         return result.rows[0];
     },
 
@@ -21,7 +21,20 @@ export const ToolModel = {
         return result.rows[0];
     },
 
-    async update(query, values) {
+    async update(name, newValues) {
+        const fields = Object.keys(newValues);
+        const values = Object.values(newValues);
+        values.push(name);
+        
+        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
+        
+        const query = `
+            UPDATE tool 
+            SET ${setClause} 
+            WHERE name = $${values.length}
+            RETURNING *
+        `;
+        
         const result = await db.query(query, values);
         if(!result) {
             throw new Error('Failed to update tool in the model');

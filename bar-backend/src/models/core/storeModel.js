@@ -21,7 +21,20 @@ export const StoreModel = {
         return result.rows[0];
     },
 
-    async update(query, values) {
+    async update(address, newValues) {
+        const fields = Object.keys(newValues);
+        const values = Object.values(newValues);
+        values.push(address);
+        
+        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
+        
+        const query = `
+            UPDATE store 
+            SET ${setClause} 
+            WHERE address = $${values.length}
+            RETURNING *
+        `;
+        
         const result = await db.query(query, values);
         if(!result) {
             throw new Error('Failed to update store in the model');

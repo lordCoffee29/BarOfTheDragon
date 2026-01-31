@@ -21,7 +21,20 @@ export const DrinkRecipeModel = {
         return result.rows[0];
     },
 
-    async update(query, values) {
+    async update(id, newValues) {
+        const fields = Object.keys(newValues);
+        const values = Object.values(newValues);
+        values.push(id);
+        
+        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
+        
+        const query = `
+            UPDATE drink_recipe 
+            SET ${setClause} 
+            WHERE id = $${values.length}
+            RETURNING *
+        `;
+        
         const result = await db.query(query, values);
         if(!result) {
             throw new Error('Failed to update drink recipe in the model');

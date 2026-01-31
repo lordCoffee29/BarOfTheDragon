@@ -21,7 +21,20 @@ export const IngredientModel = {
         return result.rows[0];
     },
 
-    async update(query, values) {
+    async update(id, newValues) {
+        const fields = Object.keys(newValues);
+        const values = Object.values(newValues);
+        values.push(id);
+        
+        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
+        
+        const query = `
+            UPDATE ingredient 
+            SET ${setClause} 
+            WHERE id = $${values.length}
+            RETURNING *
+        `;
+        
         const result = await db.query(query, values);
         if(!result) {
             throw new Error('Failed to update ingredient in the model');

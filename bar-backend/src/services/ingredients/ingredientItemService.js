@@ -1,5 +1,5 @@
 import ERROR_MESSAGES from "../../constants/errorMessages.js";
-import { IngredientItemModel } from '../../models/igredients/ingredientItemModel.js';
+import { IngredientItemModel } from '../../models/ingredients/ingredientItemModel.js';
 // import CustomError from "../../utils/CustomError.js";
 
 // Clean up + do operations here, basically backend logic to format for database
@@ -31,36 +31,13 @@ export const IngredientItemService = {
     },
 
     // Customize this logic
-    async updateIngredientItem(name, newValues) {
-        const { brand, name, quantity, unit, transactionID, dateOpened, dateFinished } = newValues;
-
-        const fields = Object.keys(newValues);
-        const values = Object.values(newValues);
-        values.push(id); // For the WHERE clause
-
-        console.log(fields);
-        console.log(values);
-
-        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
-        // console.log(setClause);
-        console.log(setClause);
-
-        // This ID mechanism is more secure against SQL injection
-        const query = `
-            UPDATE ingredient_item 
-            SET ${setClause} 
-            WHERE name = $${values.length}
-            RETURNING *
-        `
-
-
-        if(!brand && !name && !quantity && !unit && !transactionID && !dateOpened && !dateFinished) {
+    async updateIngredientItem(id, newValues) {
+        if(Object.keys(newValues).length === 0) {
             throw new Error('Missing required fields');
         }
 
-        const updatedIngredientItem = await IngredientItemModel.update(query, values);
+        const updatedIngredientItem = await IngredientItemModel.update(id, newValues);
         
-
         if(!updatedIngredientItem) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }

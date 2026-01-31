@@ -32,35 +32,12 @@ export const UnitService = {
 
     // Customize this logic
     async updateUnit(name, newValues) {
-        const { type, baseUnit, multiplier } = newValues;
-
-        const fields = Object.keys(newValues);
-        const values = Object.values(newValues);
-        values.push(name); // For the WHERE clause
-
-        console.log(fields);
-        console.log(values);
-
-        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
-        // console.log(setClause);
-        console.log(setClause);
-
-        // This ID mechanism is more secure against SQL injection
-        const query = `
-            UPDATE units 
-            SET ${setClause} 
-            WHERE name = $${values.length}
-            RETURNING *
-        `
-
-
-        if(!type && !baseUnit && !multiplier) {
+        if(Object.keys(newValues).length === 0) {
             throw new Error('Missing required fields');
         }
 
-        const updatedUnit = await UnitModel.update(query, values);
+        const updatedUnit = await UnitModel.update(name, newValues);
         
-
         if(!updatedUnit) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }

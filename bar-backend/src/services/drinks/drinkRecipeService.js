@@ -1,5 +1,5 @@
 import ERROR_MESSAGES from "../../constants/errorMessages.js";
-import { DrinkRecipeModel } from '../../models/drinks/drinkModel.js';
+import { DrinkRecipeModel } from '../../models/drinks/drinkRecipeModel.js';
 // import CustomError from "../../utils/CustomError.js";
 
 // Clean up + do operations here, basically backend logic to format for database
@@ -31,36 +31,13 @@ export const DrinkRecipeService = {
     },
 
     // Customize this logic
-    async updateBase(name, newValues) {
-        const { name, ingredient, quantity, unit } = newValues;
-
-        const fields = Object.keys(newValues);
-        const values = Object.values(newValues);
-        values.push(id); // For the WHERE clause
-
-        console.log(fields);
-        console.log(values);
-
-        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
-        // console.log(setClause);
-        console.log(setClause);
-
-        // This ID mechanism is more secure against SQL injection
-        const query = `
-            UPDATE drink_recipe 
-            SET ${setClause} 
-            WHERE id = $${values.length}
-            RETURNING *
-        `
-
-
-        if(!name && !ingredient && !quantity && !unit) {
+    async updateDrinkRecipe(id, newValues) {
+        if(Object.keys(newValues).length === 0) {
             throw new Error('Missing required fields');
         }
 
-        const updatedDrinkRecipe = await DrinkRecipeModel.update(query, values);
+        const updatedDrinkRecipe = await DrinkRecipeModel.update(id, newValues);
         
-
         if(!updatedDrinkRecipe) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }
@@ -68,10 +45,10 @@ export const DrinkRecipeService = {
         return updatedDrinkRecipe;
     },
 
-    async deleteBase(ID) {
+    async deleteDrinkRecipe(id) {
         const authenticatedUserID = 1;
 
-        const drinkRecipe = await DrinkRecipeModel.getByID(ID);
+        const drinkRecipe = await DrinkRecipeModel.getByID(id);
 
         if (!drinkRecipe) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
@@ -81,7 +58,7 @@ export const DrinkRecipeService = {
             throw new Error(ERROR_MESSAGES.FORBIDDEN, 403);
         };
 
-        const rowCount = await DrinkRecipeModel.delete(ID);
+        const rowCount = await DrinkRecipeModel.delete(id);
 
         if(rowCount === 0) {
             throw new Error(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, 500);

@@ -31,36 +31,13 @@ export const BaseService = {
     },
 
     // Customize this logic
-    async updateBase(name, newValues) {
-        const { brand, name, ml, imgPath, type, present } = newValues;
-
-        const fields = Object.keys(newValues);
-        const values = Object.values(newValues);
-        values.push(id); // For the WHERE clause
-
-        console.log(fields);
-        console.log(values);
-
-        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
-        // console.log(setClause);
-        console.log(setClause);
-
-        // This ID mechanism is more secure against SQL injection
-        const query = `
-            UPDATE base 
-            SET ${setClause} 
-            WHERE id = $${values.length}
-            RETURNING *
-        `
-
-
-        if(!brand && !name && !ml && !imgPath && !type && !present) {
+    async updateBase(id, newValues) {
+        if(Object.keys(newValues).length === 0) {
             throw new Error('Missing required fields');
         }
 
-        const updatedBase = await BaseModel.update(query, values);
+        const updatedBase = await BaseModel.update(id, newValues);
         
-
         if(!updatedBase) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }

@@ -31,36 +31,13 @@ export const LiquorService = {
     },
 
     // Customize this logic
-    async updateLiquor(name, newValues) {
-        const { brand, name, ml, ABV, imgPath, type, present } = newValues;
-
-        const fields = Object.keys(newValues);
-        const values = Object.values(newValues);
-        values.push(id); // For the WHERE clause
-
-        console.log(fields);
-        console.log(values);
-
-        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
-        // console.log(setClause);
-        console.log(setClause);
-
-        // This ID mechanism is more secure against SQL injection
-        const query = `
-            UPDATE liquor 
-            SET ${setClause} 
-            WHERE id = $${values.length}
-            RETURNING *
-        `
-
-
-        if(!brand && !name && !ml && !ABV && !imgPath && !type && !present) {
+    async updateLiquor(id, newValues) {
+        if(Object.keys(newValues).length === 0) {
             throw new Error('Missing required fields');
         }
 
-        const updatedLiquor = await LiquorModel.update(query, values);
+        const updatedLiquor = await LiquorModel.update(id, newValues);
         
-
         if(!updatedLiquor) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }

@@ -32,35 +32,12 @@ export const ToolService = {
 
     // Customize this logic
     async updateTool(name, newValues) {
-        const { name, transactionID, quantity, unit, type } = newValues;
-
-        const fields = Object.keys(newValues);
-        const values = Object.values(newValues);
-        values.push(id); // For the WHERE clause
-
-        console.log(fields);
-        console.log(values);
-
-        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
-        // console.log(setClause);
-        console.log(setClause);
-
-        // This ID mechanism is more secure against SQL injection
-        const query = `
-            UPDATE tool 
-            SET ${setClause} 
-            WHERE id = $${values.length}
-            RETURNING *
-        `
-
-
-        if(!name && !transactionID && !quantity && !unit && !type) {
+        if(Object.keys(newValues).length === 0) {
             throw new Error('Missing required fields');
         }
 
-        const updatedTool = await ToolModel.update(query, values);
+        const updatedTool = await ToolModel.update(name, newValues);
         
-
         if(!updatedTool) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }

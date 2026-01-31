@@ -21,7 +21,20 @@ export const IngredientType = {
         return result.rows[0];
     },
 
-    async update(query, values) {
+    async update(name, newValues) {
+        const fields = Object.keys(newValues);
+        const values = Object.values(newValues);
+        values.push(name);
+        
+        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
+        
+        const query = `
+            UPDATE ingredient_type 
+            SET ${setClause} 
+            WHERE name = $${values.length}
+            RETURNING *
+        `;
+        
         const result = await db.query(query, values);
         if(!result) {
             throw new Error('Failed to update ingredient_type in the model');
@@ -30,7 +43,7 @@ export const IngredientType = {
     },
 
     async delete(name) {
-        const result = await db.query('DELETE FROM ingredient_type WHERE id = $1 RETURNING *', [name]);
+        const result = await db.query('DELETE FROM ingredient_type WHERE name = $1 RETURNING *', [name]);
         return result.rowCount;
     }
 };

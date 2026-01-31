@@ -31,36 +31,13 @@ export const DrinkVariantIngredientService = {
     },
 
     // Customize this logic
-    async updateDrinkVariantIngredient(name, newValues) {
-        const { variantID, originalIngredient, replacementIngredient } = newValues;
-
-        const fields = Object.keys(newValues);
-        const values = Object.values(newValues);
-        values.push(id); // For the WHERE clause
-
-        console.log(fields);
-        console.log(values);
-
-        const setClause = fields.map((key, index) => `${key} = $${index + 1}`).join(', ');
-        // console.log(setClause);
-        console.log(setClause);
-
-        // This ID mechanism is more secure against SQL injection
-        const query = `
-            UPDATE drink_variant_ingredient 
-            SET ${setClause} 
-            WHERE name = $${values.length}
-            RETURNING *
-        `
-
-
-        if(!variantID && !originalIngredient && !replacementIngredient) {
+    async updateDrinkVariantIngredient(variantID, originalIngredient, newValues) {
+        if(Object.keys(newValues).length === 0) {
             throw new Error('Missing required fields');
         }
 
-        const updatedDrinkVariantIngredient = await DrinkVariantIngredientModel.update(query, values);
+        const updatedDrinkVariantIngredient = await DrinkVariantIngredientModel.update(variantID, originalIngredient, newValues);
         
-
         if(!updatedDrinkVariantIngredient) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         }
@@ -68,10 +45,10 @@ export const DrinkVariantIngredientService = {
         return updatedDrinkVariantIngredient;
     },
 
-    async deleteDrinkVariantIngredient(variantID) {
+    async deleteDrinkVariantIngredient(variantID, originalIngredient) {
         const authenticatedUserID = 1;
 
-        const drinkVariantIngredient = await DrinkVariantIngredientModel.getByID(variantID);
+        const drinkVariantIngredient = await DrinkVariantIngredientModel.getByID(variantID, originalIngredient);
 
         if (!drinkVariantIngredient) {
             throw new Error(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
@@ -81,7 +58,7 @@ export const DrinkVariantIngredientService = {
             throw new Error(ERROR_MESSAGES.FORBIDDEN, 403);
         };
 
-        const rowCount = await DrinkVariantIngredientModel.delete(variantID);
+        const rowCount = await DrinkVariantIngredientModel.delete(variantID, originalIngredient);
 
         if(rowCount === 0) {
             throw new Error(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, 500);

@@ -1,5 +1,4 @@
 import ERROR_MESSAGES from "../../constants/errorMessages.js";
-import { IngredientTypeModel } from '../../models/ingredient/ingredientTypeModel.js';
 // import CustomError from "../../utils/CustomError.js";
 
 // Clean up + do operations here, basically backend logic to format for database
